@@ -1,0 +1,94 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+canvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    //border:1px solid #000000;
+    background-color: #FFFFFF;
+}
+</style>
+</head>
+<body onload="startGame()">
+<canvas id ="cardSprites" width="2500" height="1364"></canvas>
+<button type="button" onclick="solRestart()">Restart</button>
+<button type="button" onclick="solButton()">Solitaire</button>
+<button type="button" onclick="matchButton()">Matching</button>
+<p id="demo"></p>
+<canvas id="GameScreen"></canvas>
+<canvas id ="padding" width="2500" height="1076"></canvas>
+<script type="text/javascript" src="CreateCards.js"></script>
+<script type="text/javascript" src="CardAspects.js"></script>
+<script type="text/javascript" src="Solitaire.js"></script>
+<script type="text/javascript" src="Matching.js"></script>
+<script>
+
+var curScreen = "Solitaire";
+
+function solButton() {
+    curScreen = "Solitaire";
+    gameScreen.width = 782;
+    gameScreen.height = 784;
+    solRestart();
+}
+
+function matchButton() {
+    curScreen = "Matching";
+    gameScreen.width = 1370;
+    gameScreen.height = 568;
+    matchRestart();
+}
+
+function startGame() {
+    ctc = document.getElementById("cardSprites");
+    ctx = ctc.getContext("2d");
+    ptc = document.getElementById("padding");
+    ptx = ptc.getContext("2d");
+    drawCards();
+    ctc.style.width = 0;
+    ctc.style.height = 0;
+    ctc.style.visibility = 'hidden';
+    ptc.style.visibility = 'hidden';
+    //ptx.drawImage(ctc, 0, 0, 2500, 1076, 0, 0, 2500, 1076);
+    defineGameScreen();
+    gameScreen.start();
+    gtx = gameScreen.context;
+    soonX = 0;
+    soonY = 0;
+    Cards.forEach(defineCards);
+    shuffle();
+    if (curScreen == "Solitaire") solSetup();
+    else if (curScreen == "Matching") matchSetup();
+}
+
+var clickX;
+var clickY;
+var gameScreen;
+
+function defineGameScreen() {
+    gameScreen = document.getElementById("GameScreen");
+    gameScreen.start = function() {
+        gameScreen.width = 782;
+        gameScreen.height = 784;
+        //document.body.insertBefore(gameScreen, document.body.childNodes[0]);
+        gameScreen.addEventListener("click", userInput);
+        gameScreen.context = gameScreen.getContext("2d");
+    }
+    gameScreen.clear = function() {
+        gameScreen.context.clearRect(0, 0, gameScreen.width, gameScreen.height);
+    }
+}
+
+function userInput() {
+    clickX = event.pageX - gameScreen.offsetLeft;
+    clickY = event.pageY - gameScreen.offsetTop;
+    if (curScreen == "Solitaire") findSolPos();
+    else if (curScreen == "Matching") findMatchPos();
+}
+
+</script>
+</html>
